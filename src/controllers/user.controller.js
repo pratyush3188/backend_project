@@ -29,15 +29,19 @@ const existeduser = await User.findOne({
 if (existeduser) {
     throw new apierror(409, "User with email or username already exist   ")
 }
-const avatarLocalpath = req.files?.avatar[0]?.path
-const coverImagelocalpath = req.files?.coverimag[0]?.path;
+const avatarLocalpath = req.files?.avatar?.[0]?.path;
+const coverImagelocalpath = req.files?.coverimage?.[0]?.path;
 
-if ( !avatarLocalpath) {
-    throw new apierror(400,"Avatar file is required")
+if (!avatarLocalpath) {
+  throw new apierror(400, "Avatar file is required");
 }
-
  const avatar = await uploadoncloudinary(avatarLocalpath)
  const coverimage  = await uploadoncloudinary(coverImagelocalpath)
+
+// let coverimagelocalpath;
+// if(req.files && Array.isArray(req.files.coverimage) && req.files.coverimage.length >0){
+//     coverImagelocalpath=req.files.coverimage[00]
+// }
  
 
  if(!avatar){
@@ -55,10 +59,14 @@ const user =  await User.create({
 
 
 })
+console.log("BODY:", req.body);
+console.log("FILES:", req.files);
+
 
 // console.log(existeduser);
 
 // console.log(req.files)
+// console.log(req.body)
 const createduser = await User.findById(user._id).select(
     "-password -refreshtoken"
 )
@@ -69,5 +77,5 @@ return res.status(201).json(
     new Apirespoonse(200,createduser,"User registered Succesfully  ")
 )
 })
-
+// console.log(req.files)
 export {registerUser} 
